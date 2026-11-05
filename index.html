@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>BMTC Namma Ride (ನಮ್ಮ ಬಸ್) - Web Application</title>
+  <meta name="description" content="BMTC Namma Ride - Transit Bus Ticket Booking System (Single Page Web Application)">
+  <meta name="theme-color" content="#C8102E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Kannada:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="manifest" href="/manifest.json">
+</head>
+<body>
+
+  <!-- Top Web Navbar -->
+  <header class="web-navbar">
+    <div class="web-logo">
+      <div class="web-logo-icon"><i class="fa-solid fa-bus"></i></div>
+      <div>
+        <div class="web-logo-text">BMTC Namma Ride</div>
+        <div style="font-size: 11px; color: #9CA3AF;">Bengaluru Metropolitan Transport Corporation</div>
+      </div>
+      <span class="web-kannada-tag">ನಮ್ಮ ಬಸ್</span>
+    </div>
+
+    <div class="web-nav-links">
+      <button class="nav-route-btn active" id="btnNavSearch" onclick="navigateTo('/')"><i class="fa-solid fa-compass"></i> 1. Search (/)</button>
+      <button class="nav-route-btn" id="btnNavCheckout" onclick="navigateTo('/checkout')"><i class="fa-solid fa-users"></i> 2. Checkout (/checkout)</button>
+      <button class="nav-route-btn" id="btnNavConfirm" onclick="navigateTo('/confirmation/NR-MW3W0FRR')"><i class="fa-solid fa-qrcode"></i> 3. Pass (/confirmation)</button>
+      <button class="web-view-toggle" onclick="toggleResponsiveView()"><i class="fa-solid fa-mobile-screen"></i> <span id="viewToggleText">Expanded Responsive View</span></button>
+    </div>
+  </header>
+
+  <!-- Notification Toast -->
+  <div class="toast-notice" id="globalToast">
+    <i class="fa-solid fa-circle-check" style="color: var(--emerald);"></i> BMTC Namma Ride Loaded
+  </div>
+
+  <!-- Main Mobile App Shell -->
+  <main class="app-container">
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <span>09:41</span>
+      <div style="display: flex; gap: 6px;">
+        <i class="fa-solid fa-signal"></i>
+        <i class="fa-solid fa-wifi"></i>
+        <i class="fa-solid fa-battery-full"></i>
+      </div>
+    </div>
+
+    <!-- BMTC Top App Bar -->
+    <div class="app-bar">
+      <button class="icon-button" id="topAppBarBack" style="display: none;" onclick="handleAppBarBack()">
+        <i class="fa-solid fa-arrow-left"></i>
+      </button>
+
+      <div class="app-bar-crest">
+        <i class="fa-solid fa-bus"></i>
+      </div>
+
+      <span class="app-bar-kannada">ನಮ್ಮ ಬಸ್</span>
+
+      <div class="app-bar-title-group">
+        <div class="app-bar-title" id="topAppBarTitle">BMTC Namma Ride</div>
+        <div class="app-bar-sub" id="topAppBarSubtitle">Book Ticket</div>
+      </div>
+
+      <div class="app-bar-actions">
+        <button class="icon-button" onclick="showToast('No new transit alerts for your route')">
+          <i class="fa-regular fa-bell"></i>
+        </button>
+        <button class="icon-button" onclick="showToast('Commuter Profile: Rohan Sharma (+91 98450 12345)')">
+          <i class="fa-regular fa-circle-user"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Viewport Content Area -->
+    <div class="viewport-content" id="appViewport">
+
+      <!-- ================= SCREEN 1: SEARCH & BOOKING (/) ================= -->
+      <section class="screen-view active" id="screenSearch">
+        <!-- Booking Card -->
+        <div class="card">
+          <div class="card-header-flex">
+            <div class="card-heading">
+              <span>🚌</span> Book Your Ticket
+            </div>
+            <div class="live-badge">Live Fares</div>
+          </div>
+
+          <!-- Boarding & Alighting with Swap -->
+          <div class="stops-wrapper">
+            <div class="stop-box">
+              <div class="input-label">
+                <i class="fa-solid fa-circle-dot" style="color: var(--primary-red); font-size: 9px;"></i> Boarding Point
+              </div>
+              <div class="select-dropdown-box" onclick="showStopSelector(true)">
+                <span><i class="fa-solid fa-location-dot" style="color: var(--primary-red); margin-right: 8px;"></i> <strong id="boardStopLabel">Shivajinagar Bus Station</strong></span>
+                <i class="fa-solid fa-chevron-down" style="color: var(--text-muted); font-size: 12px;"></i>
+              </div>
+            </div>
+
+            <!-- Swap Round Button -->
+            <button class="swap-round-btn" onclick="Store.swapStops()" title="Swap Boarding & Alighting">
+              <i class="fa-solid fa-arrows-up-down"></i>
+            </button>
+
+            <div class="stop-box">
+              <div class="input-label">
+                <i class="fa-solid fa-circle-dot" style="color: var(--primary-red); font-size: 9px;"></i> Alighting Point
+              </div>
+              <div class="select-dropdown-box" onclick="showStopSelector(false)">
+                <span><i class="fa-solid fa-location-arrow" style="color: var(--primary-red); margin-right: 8px;"></i> <strong id="alightStopLabel">Whitefield TTMC</strong></span>
+                <i class="fa-solid fa-chevron-down" style="color: var(--text-muted); font-size: 12px;"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- Passenger Name & Phone Row -->
+          <div class="form-grid-2">
+            <div>
+              <div class="input-label">Passenger Name</div>
+              <input type="text" class="text-field" id="pSearchName" value="Arjun Rao" onchange="Store.primaryName = this.value">
+            </div>
+            <div>
+              <div class="input-label">Phone (+91)</div>
+              <input type="text" class="text-field" id="pSearchPhone" value="98765 43210" onchange="Store.primaryPhone = this.value">
+            </div>
+          </div>
+
+          <!-- Travel Date -->
+          <div class="stop-box">
+            <div class="input-label">Travel Date</div>
+            <div class="select-dropdown-box" onclick="showToast('Date set to Today, 05 Nov 2026')">
+              <span><i class="fa-regular fa-calendar" style="color: var(--primary-red); margin-right: 8px;"></i> Today, 05 Nov 2026</span>
+              <span style="background: #FFE4D6; color: #EA580C; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 700;">Peak Hours</span>
+            </div>
+          </div>
+
+          <!-- Number of Tickets Quick Stepper -->
+          <div class="ticket-stepper-container">
+            <div class="stepper-header-row">
+              <div>
+                <div style="font-size: 13px; font-weight: 700; color: var(--text-primary);">Number of Tickets</div>
+                <div style="font-size: 11px; color: var(--text-muted);">₹0 surcharge for digital payment</div>
+              </div>
+              <div class="counter-pill">
+                <button class="circle-step-btn" onclick="Store.updateQuickTickets(-1)">-</button>
+                <span id="quickCountVal" style="font-weight: 700; font-size: 14px; min-width: 16px; text-align: center;">2</span>
+                <button class="circle-step-btn plus" onclick="Store.updateQuickTickets(1)">+</button>
+              </div>
+            </div>
+            <div style="display: flex; gap: 8px; margin-top: 10px; align-items: center; font-size: 11px;">
+              <span style="background: #E2E8F0; padding: 3px 8px; border-radius: 6px; font-weight: 600;" id="quickAdultsPill">Adults: 2</span>
+              <span style="background: #E2E8F0; padding: 3px 8px; border-radius: 6px; font-weight: 600;" id="quickChildPill">Child (Under 12): 0</span>
+              <span style="margin-left: auto; color: var(--emerald); font-weight: 700;"><i class="fa-regular fa-circle-check"></i> Validated</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Available Buses Section -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin: 18px 0 10px 0;">
+          <h3 style="font-size: 17px; font-weight: 800; color: var(--text-primary);">Available Buses</h3>
+          <span style="font-size: 12px; color: var(--primary-red); font-weight: 700;" id="summaryStops">Shivajinagar → Whitefield</span>
+        </div>
+
+        <!-- Filter Chips -->
+        <div class="chips-scroll">
+          <button class="filter-pill active" data-filter="all" onclick="Store.setFilter('all')">All Services 4</button>
+          <button class="filter-pill" data-filter="non-ac" onclick="Store.setFilter('non-ac')">Non-AC</button>
+          <button class="filter-pill" data-filter="ac" onclick="Store.setFilter('ac')">AC Electric</button>
+          <button class="filter-pill" data-filter="volvo" onclick="Store.setFilter('volvo')">Volvo Vajra</button>
+        </div>
+
+        <!-- Buses Container -->
+        <div id="busesListContainer"></div>
+
+        <!-- Instant UPI Banner -->
+        <div style="background: #EEF2FF; border: 1px solid #DCE3FA; border-radius: 14px; padding: 12px; display: flex; align-items: center; gap: 12px; margin-top: 10px; cursor: pointer;" onclick="showToast('BMTC Instant Tap & Go supported across all routes')">
+          <div style="background: white; border-radius: 10px; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; color: #4F46E5; font-size: 18px;">
+            <i class="fa-solid fa-qrcode"></i>
+          </div>
+          <div style="flex: 1;">
+            <div style="font-size: 13px; font-weight: 700; color: #1E1B4B;">Instant UPI Tap & Go</div>
+            <div style="font-size: 11px; color: #475569;">Conductor validates ticket directly on phone screen</div>
+          </div>
+          <i class="fa-solid fa-chevron-right" style="color: #64748B; font-size: 13px;"></i>
+        </div>
+
+        <!-- Screen 1 Sticky Bar -->
+        <div class="bottom-sticky-bar">
+          <div>
+            <div style="font-size: 13px; font-weight: 600;">Total: <strong style="font-size: 20px; font-weight: 900; color: var(--primary-red);" id="screen1TotalFare">₹70</strong></div>
+            <div style="font-size: 11px; color: var(--text-muted);" id="screen1Subtext">335E Non-AC · 2 Passengers</div>
+          </div>
+          <button class="action-book-btn" onclick="navigateTo('/checkout')">
+            <span>Book Now</span> <i class="fa-solid fa-ticket"></i>
+          </button>
+        </div>
+      </section>
+
+      <!-- ================= SCREEN 2: MULTI-PASSENGER CHECKOUT (/checkout) ================= -->
+      <section class="screen-view" id="screenCheckout">
+        <!-- Route Summary Card -->
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 15px; font-weight: 800;" id="cRouteNumber">335E</span>
+              <span class="badge-service badge-nonac" id="cRouteService">Non-AC</span>
+            </div>
+            <span style="font-size: 13px; font-weight: 700; color: var(--primary-red);">
+              <i class="fa-regular fa-clock"></i> <span id="cDepartureTime">08:45 AM</span>
+            </span>
+          </div>
+
+          <div class="timeline-track">
+            <div class="timeline-line-col">
+              <div class="timeline-dot" style="background: var(--primary-red);"></div>
+              <div class="timeline-connector"></div>
+              <div class="timeline-dot" style="background: var(--emerald);"></div>
+            </div>
+            <div style="flex: 1; font-size: 13px; font-weight: 700;">
+              <div id="cBoardingStop">Shivajinagar</div>
+              <div style="margin-top: 14px;" id="cAlightingStop">Whitefield TTMC</div>
+            </div>
+            <div style="text-align: right; font-size: 12px;">
+              <div style="font-weight: 700; color: var(--text-primary);" id="cPlatformBay">Platform 3 · Bay 2</div>
+              <div style="margin-top: 6px; color: var(--text-muted);">Real-time Radar</div>
+            </div>
+          </div>
+
+          <div style="border-top: 1px solid var(--border-light); padding-top: 10px; display: flex; justify-content: space-between; font-size: 12px;">
+            <span style="color: var(--emerald); font-weight: 600;"><i class="fa-solid fa-shield-halved"></i> Real-time GPS Tracking Active</span>
+            <span style="color: var(--primary-red); font-weight: 700;" id="cSeatsLeft">22 Seats Left</span>
+          </div>
+        </div>
+
+        <!-- Select Passengers Steppers -->
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <span style="font-size: 15px; font-weight: 800;">Select Passengers</span>
+            <span style="background: var(--primary-red-light); color: var(--primary-red); padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 700;" id="cTotalTicketsBadge">3 Tickets</span>
+          </div>
+
+          <!-- Adult Stepper -->
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #F1F5F9;">
+            <div>
+              <div style="font-size: 14px; font-weight: 700;">Adult</div>
+              <div style="font-size: 11px; color: var(--text-muted);">₹35 per passenger</div>
+            </div>
+            <span style="font-weight: 700; color: var(--primary-red);" id="cAdultSub">₹70</span>
+            <div class="counter-pill">
+              <button class="circle-step-btn" onclick="Store.updateAdults(-1)">-</button>
+              <span id="cAdultCount" style="font-weight: 700; font-size: 14px;">2</span>
+              <button class="circle-step-btn plus" onclick="Store.updateAdults(1)">+</button>
+            </div>
+          </div>
+
+          <!-- Child Stepper -->
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #F1F5F9;">
+            <div>
+              <div style="font-size: 14px; font-weight: 700;">Child (5-12 yrs)</div>
+              <div style="font-size: 11px; color: var(--text-muted);">₹20 per passenger</div>
+            </div>
+            <span style="font-weight: 700; color: var(--primary-red);" id="cChildSub">₹20</span>
+            <div class="counter-pill">
+              <button class="circle-step-btn" onclick="Store.updateChildren(-1)">-</button>
+              <span id="cChildCount" style="font-weight: 700; font-size: 14px;">1</span>
+              <button class="circle-step-btn plus" onclick="Store.updateChildren(1)">+</button>
+            </div>
+          </div>
+
+          <!-- Senior Stepper -->
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 0;">
+            <div>
+              <div style="font-size: 14px; font-weight: 700;">Senior / Concession</div>
+              <div style="font-size: 11px; color: var(--text-muted);">₹18 per passenger</div>
+            </div>
+            <span style="font-weight: 700; color: var(--primary-red);" id="cSeniorSub">₹0</span>
+            <div class="counter-pill">
+              <button class="circle-step-btn" onclick="Store.updateSeniors(-1)">-</button>
+              <span id="cSeniorCount" style="font-weight: 700; font-size: 14px;">0</span>
+              <button class="circle-step-btn plus" onclick="Store.updateSeniors(1)">+</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Passenger Details (Dynamic Form Fields) -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin: 16px 0 10px 0;">
+          <span style="font-size: 16px; font-weight: 800;">Passenger Details</span>
+          <span style="color: var(--emerald); font-size: 11px; font-weight: 700;"><i class="fa-solid fa-shield-halved"></i> Auto-verified</span>
+        </div>
+        <div id="dynamicPassengerContainer"></div>
+
+        <!-- Fare Breakdown -->
+        <div class="card">
+          <div style="font-size: 15px; font-weight: 800; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-receipt" style="color: var(--primary-red);"></i> Fare Breakdown
+          </div>
+          <div class="info-data-row" id="fbAdultsRow"></div>
+          <div class="info-data-row" id="fbChildRow"></div>
+          <div class="info-data-row" id="fbSeniorRow"></div>
+          <div class="info-data-row">
+            <span class="info-label">Service & GST <i class="fa-solid fa-check" style="color: var(--emerald);"></i></span>
+            <span class="info-value" style="color: var(--emerald);">₹0 Free</span>
+          </div>
+          <div style="border-top: 1px solid var(--border-light); margin-top: 10px; padding-top: 10px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-size: 14px; font-weight: 800;">Total Payable</div>
+              <div style="font-size: 11px; color: var(--text-muted);">Instant digital ticket delivery</div>
+            </div>
+            <span style="font-size: 24px; font-weight: 900; color: var(--primary-red);" id="fbTotalPayable">₹90</span>
+          </div>
+        </div>
+
+        <!-- Payment Method -->
+        <h4 style="font-size: 16px; font-weight: 800; margin: 16px 0 10px 0;">Payment Method</h4>
+        <div class="payment-method-row selected" onclick="selectPaymentMethod(this, 'upi')">
+          <div style="width: 38px; height: 38px; background: var(--emerald-bg); color: var(--emerald); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px;"><i class="fa-solid fa-wallet"></i></div>
+          <div>
+            <div style="font-size: 13px; font-weight: 700;">UPI Instant <span style="background: var(--emerald-bg); color: var(--emerald); font-size: 10px; padding: 1px 6px; border-radius: 4px;">Fast</span></div>
+            <div style="font-size: 11px; color: var(--text-muted);">GPay, PhonePe, Paytm, BHIM</div>
+          </div>
+          <div class="pay-radio"></div>
+        </div>
+        <div class="payment-method-row" onclick="selectPaymentMethod(this, 'smartCard')">
+          <div style="width: 38px; height: 38px; background: var(--volvo-bg); color: var(--volvo-blue); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px;"><i class="fa-solid fa-id-card"></i></div>
+          <div>
+            <div style="font-size: 13px; font-weight: 700;">BMTC Smart Card / Pass</div>
+            <div style="font-size: 11px; color: var(--text-muted);">Tap & Pay or Namma Pass ID</div>
+          </div>
+          <div class="pay-radio"></div>
+        </div>
+        <div class="payment-method-row" onclick="selectPaymentMethod(this, 'cards')">
+          <div style="width: 38px; height: 38px; background: #EEF2FF; color: #6366F1; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px;"><i class="fa-regular fa-credit-card"></i></div>
+          <div>
+            <div style="font-size: 13px; font-weight: 700;">Cards / Net Banking</div>
+            <div style="font-size: 11px; color: var(--text-muted);">Visa, Mastercard, RuPay</div>
+          </div>
+          <div class="pay-radio"></div>
+        </div>
+
+        <!-- Screen 2 Sticky Bar -->
+        <div class="bottom-sticky-bar">
+          <div>
+            <div style="font-size: 13px; font-weight: 600;">Total: <strong style="font-size: 20px; font-weight: 900; color: var(--primary-red);" id="screen2TotalFare">₹90</strong></div>
+            <div style="font-size: 11px; color: var(--text-muted);" id="screen2Subtext">3 Passengers · Route 335E</div>
+          </div>
+          <button class="action-book-btn" onclick="processPayment()">
+            <span>Book Now</span> <i class="fa-solid fa-ticket"></i>
+          </button>
+        </div>
+      </section>
+
+      <!-- ================= SCREEN 3: CONFIRMED TICKET PASS (/confirmation) ================= -->
+      <section class="screen-view" id="screenConfirmation">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 12px;">
+          <span style="font-weight: 700; display: flex; align-items: center; gap: 6px;"><span style="width: 8px; height: 8px; background: var(--emerald); border-radius: 50%;"></span> Active Digital Pass</span>
+          <span style="background: #F1F5F9; padding: 3px 10px; border-radius: 12px; color: var(--text-muted); font-weight: 600;">Valid for 3h remaining</span>
+        </div>
+
+        <!-- Perforated Ticket Card -->
+        <div class="perforated-ticket-card">
+          <!-- Top Red Portion -->
+          <div class="ticket-header-red">
+            <div style="width: 44px; height: 44px; background: #34D399; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px auto; font-size: 22px;">
+              <i class="fa-solid fa-check"></i>
+            </div>
+            <h2 style="font-size: 20px; font-weight: 800; letter-spacing: 0.3px;">Ticket Confirmed!</h2>
+            <div style="font-size: 12px; opacity: 0.9; margin-top: 4px;" id="ticketIdDisplay">Ticket ID: NR-MW3W0FRR</div>
+
+            <!-- Centered QR Box -->
+            <div class="qr-code-box" onclick="showConductorQrModal()">
+              <svg width="150" height="150" viewBox="0 0 100 100">
+                <rect width="100" height="100" fill="white"/>
+                <!-- Corner 1 -->
+                <rect x="5" y="5" width="28" height="28" fill="#1E293B"/>
+                <rect x="9" y="9" width="20" height="20" fill="white"/>
+                <rect x="13" y="13" width="12" height="12" fill="#1E293B"/>
+                <!-- Corner 2 -->
+                <rect x="67" y="5" width="28" height="28" fill="#1E293B"/>
+                <rect x="71" y="9" width="20" height="20" fill="white"/>
+                <rect x="75" y="13" width="12" height="12" fill="#1E293B"/>
+                <!-- Corner 3 -->
+                <rect x="5" y="67" width="28" height="28" fill="#1E293B"/>
+                <rect x="9" y="71" width="20" height="20" fill="white"/>
+                <rect x="13" y="75" width="12" height="12" fill="#1E293B"/>
+                <!-- Matrix payload -->
+                <rect x="38" y="10" width="5" height="5" fill="#1E293B"/>
+                <rect x="48" y="10" width="5" height="5" fill="#1E293B"/>
+                <rect x="42" y="22" width="5" height="5" fill="#1E293B"/>
+                <rect x="52" y="25" width="5" height="5" fill="#1E293B"/>
+                <rect x="10" y="42" width="5" height="5" fill="#1E293B"/>
+                <rect x="25" y="48" width="5" height="5" fill="#1E293B"/>
+                <rect x="40" y="40" width="5" height="5" fill="#1E293B"/>
+                <rect x="50" y="45" width="5" height="5" fill="#1E293B"/>
+                <rect x="65" y="42" width="5" height="5" fill="#1E293B"/>
+                <rect x="80" y="48" width="5" height="5" fill="#1E293B"/>
+                <rect x="40" y="65" width="5" height="5" fill="#1E293B"/>
+                <rect x="55" y="70" width="5" height="5" fill="#1E293B"/>
+                <rect x="45" y="80" width="5" height="5" fill="#1E293B"/>
+                <rect x="70" y="75" width="5" height="5" fill="#1E293B"/>
+                <rect x="82" y="82" width="5" height="5" fill="#1E293B"/>
+              </svg>
+              <div style="font-size: 11px; color: var(--text-muted); margin-top: 6px; font-weight: 600;">
+                <i class="fa-solid fa-expand"></i> Tap to enlarge for Conductor
+              </div>
+            </div>
+          </div>
+
+          <!-- Perforation Notch Divider -->
+          <div class="ticket-perforation-divider">
+            <div class="notch-left"></div>
+            <div class="dashes-line"></div>
+            <div class="notch-right"></div>
+          </div>
+
+          <!-- Bottom White Body -->
+          <div class="ticket-body-white">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+              <span style="font-size: 11px; font-weight: 700; color: var(--text-muted); letter-spacing: 0.5px;">PASSENGER SEATS</span>
+              <span style="background: var(--primary-red-light); color: var(--primary-red); padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 700;">3 Passengers</span>
+            </div>
+
+            <!-- Seat Chips -->
+            <div style="display: flex; gap: 8px; margin-bottom: 14px; overflow-x: auto;" id="ticketSeatsContainer"></div>
+
+            <!-- Table specifications -->
+            <div class="info-data-row"><span class="info-label">Passenger</span><span class="info-value" style="font-weight: 800;" id="tPassengerName">Rohan Sharma</span></div>
+            <div class="info-data-row"><span class="info-label">Phone</span><span class="info-value" id="tPassengerPhone">+91 98445 32431</span></div>
+            <div class="info-data-row"><span class="info-label">Route</span><span class="info-value" id="tRouteDisplay">335E <span class="badge-service badge-nonac">Non-AC</span></span></div>
+            <div class="info-data-row"><span class="info-label">Boarding</span><span class="info-value" id="tBoarding">Shivajinagar Bus Stn</span></div>
+            <div class="info-data-row"><span class="info-label">Alighting</span><span class="info-value" id="tAlighting">Whitefield TTMC</span></div>
+            <div class="info-data-row"><span class="info-label">Travel Date</span><span class="info-value">05 Nov 2026</span></div>
+            <div class="info-data-row"><span class="info-label">Departure</span><span class="info-value" style="font-weight: 800;" id="tDeparture">08:45 AM</span></div>
+            <div class="info-data-row">
+              <span class="info-label">Pass Status</span>
+              <span class="info-value" style="color: var(--emerald); font-weight: 800;">● VALID & ACTIVE</span>
+            </div>
+
+            <!-- Fare Box -->
+            <div style="background: #F3F6FD; border: 1px solid var(--border-light); border-radius: 12px; padding: 12px 16px; margin-top: 14px; display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div style="font-size: 12px; color: var(--text-muted);">Total Fare Paid</div>
+                <div style="font-size: 11px; font-weight: 600; color: var(--text-primary); margin-top: 2px;">
+                  <span style="color: var(--emerald);">●</span> UPI · Successful
+                </div>
+              </div>
+              <span style="font-size: 24px; font-weight: 900; color: var(--primary-red);" id="tTotalPaid">₹90</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Bus Tracking Card -->
+        <div class="map-route-card">
+          <div style="padding: 12px 16px; display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <div style="width: 34px; height: 34px; background: var(--primary-red-light); color: var(--primary-red); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px;">
+                <i class="fa-solid fa-bus"></i>
+              </div>
+              <div>
+                <div style="font-size: 14px; font-weight: 700;" id="trackRouteTitle">Bus 335E Tracking</div>
+                <div style="font-size: 11px; color: var(--text-muted);">Arriving platform 3 in 6 mins</div>
+              </div>
+            </div>
+            <span style="background: #DCFCE7; color: #16A34A; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 10px;">ON TIME</span>
+          </div>
+
+          <div class="mini-map-canvas-container" onclick="showLiveTrackingSheet()">
+            <svg width="100%" height="100%" viewBox="0 0 360 130" preserveAspectRatio="none">
+              <!-- Grid Roads -->
+              <line x1="0" y1="35" x2="360" y2="35" stroke="#CBD5E1" stroke-width="1.5"/>
+              <line x1="0" y1="85" x2="360" y2="85" stroke="#CBD5E1" stroke-width="1.5"/>
+              <line x1="90" y1="0" x2="90" y2="130" stroke="#CBD5E1" stroke-width="1.5"/>
+              <line x1="270" y1="0" x2="270" y2="130" stroke="#CBD5E1" stroke-width="1.5"/>
+
+              <!-- Major Highway -->
+              <path d="M 0 110 Q 150 70 360 25" fill="none" stroke="#94A3B8" stroke-width="3"/>
+              <!-- Transit Bus Red Path -->
+              <path d="M 50 100 Q 160 65 310 35" fill="none" stroke="#C8102E" stroke-width="4" stroke-linecap="round"/>
+
+              <!-- Start Stop -->
+              <circle cx="50" cy="100" r="5" fill="#2563EB"/>
+              <!-- Destination Stop -->
+              <circle cx="310" cy="35" r="5" fill="#10B981"/>
+
+              <!-- Live Bus Pin with Pulse Ring -->
+              <circle cx="170" cy="63" r="14" fill="rgba(200, 16, 46, 0.25)"/>
+              <circle cx="170" cy="63" r="6" fill="#C8102E"/>
+            </svg>
+
+            <!-- Map Watermark -->
+            <div style="position: absolute; top: 25px; left: 0; right: 0; text-align: center; color: rgba(30,41,59,0.25); font-weight: 800; pointer-events: none;">
+              Bengaluru · <span style="font-family: 'Noto Sans Kannada', sans-serif;">ಬೆಂಗಳೂರು</span>
+            </div>
+
+            <!-- Bottom Pill -->
+            <div class="map-badge-overlay">
+              <span><i class="fa-solid fa-location-arrow" style="color: var(--emerald);"></i> 1.2 km away from boarding stop</span>
+              <span style="background: white; color: black; font-weight: 700; padding: 2px 8px; border-radius: 4px; font-size: 10px;">Map View →</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <button style="width: 100%; background: #EFF6FF; color: var(--volvo-blue); border: none; padding: 14px; border-radius: 12px; font-weight: 700; font-size: 14px; margin-bottom: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="downloadReceipt()">
+          <i class="fa-solid fa-share-nodes"></i> Download PDF Receipt / Share
+        </button>
+        <button style="width: 100%; background: var(--volvo-blue); color: white; border: none; padding: 14px; border-radius: 12px; font-weight: 700; font-size: 14px; margin-bottom: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="showLiveTrackingSheet()">
+          <i class="fa-solid fa-crosshairs"></i> Live Track Bus 335E
+        </button>
+        <button style="width: 100%; background: var(--primary-red); color: white; border: none; padding: 14px; border-radius: 12px; font-weight: 700; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="bookAnotherTicket()">
+          <i class="fa-solid fa-ticket"></i> Book Another Ticket
+        </button>
+      </section>
+
+    </div>
+
+    <!-- Screen 1 Bottom Navigation Bar -->
+    <nav class="bottom-nav-bar" id="globalBottomNav">
+      <div class="nav-tab-item active" onclick="navigateTo('/')">
+        <i class="fa-solid fa-bus" style="font-size: 18px;"></i>
+        <span>Book Ticket</span>
+      </div>
+      <div class="nav-tab-item" onclick="showToast('BMTC Namma Pass & Smart Cards section')">
+        <i class="fa-solid fa-id-card" style="font-size: 18px;"></i>
+        <span>Passes</span>
+      </div>
+      <div class="nav-tab-item" onclick="navigateTo('/confirmation/NR-MW3W0FRR')">
+        <i class="fa-solid fa-ticket" style="font-size: 18px;"></i>
+        <span>My Trips</span>
+      </div>
+      <div class="nav-tab-item" onclick="showToast('Passenger Profile: Rohan Sharma')">
+        <i class="fa-solid fa-circle-user" style="font-size: 18px;"></i>
+        <span>Profile</span>
+      </div>
+    </nav>
+
+    <!-- Modal 1: Payment Processing Simulation -->
+    <div class="modal-backdrop" id="paymentProcessingModal">
+      <div class="modal-sheet">
+        <div class="spinner-ring"></div>
+        <div style="font-size: 18px; font-weight: 800; color: var(--text-primary);">Processing Payment</div>
+        <div style="font-size: 12px; color: var(--text-muted); margin-top: 6px;">
+          Authorizing Karnataka Transit UPI Switch & securing seat allocation with BMTC server...
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal 2: Conductor QR Code Enlargement -->
+    <div class="modal-backdrop" id="qrModalOverlay" onclick="hideConductorQrModal()">
+      <div class="modal-sheet" onclick="event.stopPropagation()">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <div style="font-size: 16px; font-weight: 800;"><i class="fa-solid fa-qrcode" style="color: var(--primary-red);"></i> Conductor ETM Scan</div>
+          <button style="background: none; border: none; font-size: 18px; cursor: pointer;" onclick="hideConductorQrModal()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div style="background: var(--emerald-bg); color: var(--emerald); padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; display: inline-block; margin-bottom: 16px;">
+          ● ACTIVE PASS · VERIFIED
+        </div>
+        <div>
+          <svg width="220" height="220" viewBox="0 0 100 100">
+            <rect width="100" height="100" fill="white"/>
+            <rect x="5" y="5" width="28" height="28" fill="#1E293B"/>
+            <rect x="9" y="9" width="20" height="20" fill="white"/>
+            <rect x="13" y="13" width="12" height="12" fill="#1E293B"/>
+            <rect x="67" y="5" width="28" height="28" fill="#1E293B"/>
+            <rect x="71" y="9" width="20" height="20" fill="white"/>
+            <rect x="75" y="13" width="12" height="12" fill="#1E293B"/>
+            <rect x="5" y="67" width="28" height="28" fill="#1E293B"/>
+            <rect x="9" y="71" width="20" height="20" fill="white"/>
+            <rect x="13" y="75" width="12" height="12" fill="#1E293B"/>
+            <rect x="38" y="10" width="5" height="5" fill="#1E293B"/>
+            <rect x="48" y="10" width="5" height="5" fill="#1E293B"/>
+            <rect x="42" y="22" width="5" height="5" fill="#1E293B"/>
+            <rect x="52" y="25" width="5" height="5" fill="#1E293B"/>
+            <rect x="10" y="42" width="5" height="5" fill="#1E293B"/>
+            <rect x="25" y="48" width="5" height="5" fill="#1E293B"/>
+            <rect x="40" y="40" width="5" height="5" fill="#1E293B"/>
+            <rect x="50" y="45" width="5" height="5" fill="#1E293B"/>
+            <rect x="65" y="42" width="5" height="5" fill="#1E293B"/>
+            <rect x="80" y="48" width="5" height="5" fill="#1E293B"/>
+            <rect x="40" y="65" width="5" height="5" fill="#1E293B"/>
+            <rect x="55" y="70" width="5" height="5" fill="#1E293B"/>
+            <rect x="45" y="80" width="5" height="5" fill="#1E293B"/>
+            <rect x="70" y="75" width="5" height="5" fill="#1E293B"/>
+            <rect x="82" y="82" width="5" height="5" fill="#1E293B"/>
+          </svg>
+        </div>
+        <div style="font-family: monospace; font-size: 12px; color: var(--text-muted); margin-top: 10px;">
+          BMTC|NR-MW3W0FRR|335E|3|₹90
+        </div>
+        <div style="font-size: 11px; color: var(--text-secondary); margin-top: 10px;">
+          Present this high-contrast QR directly to the BMTC bus conductor's electronic ticket machine.
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal 3: Live Radar Telemetry Bottom Sheet -->
+    <div class="modal-backdrop" id="trackingModalOverlay" onclick="hideLiveTrackingSheet()">
+      <div class="modal-sheet" style="max-height: 80vh; overflow-y: auto; text-align: left;" onclick="event.stopPropagation()">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="background: var(--primary-red); color: white; padding: 3px 8px; border-radius: 6px; font-weight: bold; font-size: 13px;">335E</span>
+            <span style="font-size: 15px; font-weight: 800;">Live GPS Radar</span>
+          </div>
+          <button style="background: none; border: none; font-size: 18px; cursor: pointer;" onclick="hideLiveTrackingSheet()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <div style="background: #F8FAFC; border: 1px solid var(--border-light); border-radius: 12px; padding: 10px; display: flex; justify-content: space-around; margin-bottom: 14px; text-align: center;">
+          <div>
+            <div style="font-size: 14px; font-weight: 800; color: var(--emerald);">6 mins</div>
+            <div style="font-size: 10px; color: var(--text-muted);">EST. ARRIVAL</div>
+          </div>
+          <div>
+            <div style="font-size: 14px; font-weight: 800; color: var(--volvo-blue);">1.2 km</div>
+            <div style="font-size: 10px; color: var(--text-muted);">DISTANCE</div>
+          </div>
+          <div>
+            <div style="font-size: 14px; font-weight: 800; color: var(--orange-badge);">34 km/h</div>
+            <div style="font-size: 10px; color: var(--text-muted);">SPEED</div>
+          </div>
+        </div>
+
+        <div style="font-size: 13px; font-weight: 800; margin-bottom: 8px;">Route Progression</div>
+        <div style="font-size: 12px; line-height: 1.8;">
+          <div><i class="fa-solid fa-circle" style="color: var(--emerald); font-size: 10px;"></i> Shivajinagar Bus Station (Passed)</div>
+          <div><i class="fa-solid fa-circle" style="color: var(--emerald); font-size: 10px;"></i> MG Road Metro Station (Passed)</div>
+          <div style="font-weight: 800; color: var(--primary-red);"><i class="fa-solid fa-bus" style="font-size: 12px;"></i> Approaching Domlur / Trinity Circle (Next)</div>
+          <div><i class="fa-solid fa-circle" style="color: #CBD5E1; font-size: 10px;"></i> HAL Old Airport Road</div>
+          <div><i class="fa-solid fa-circle" style="color: #CBD5E1; font-size: 10px;"></i> Marathahalli Bridge</div>
+          <div><i class="fa-solid fa-circle" style="color: #CBD5E1; font-size: 10px;"></i> Whitefield TTMC (Final Stop)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal 4: Generic Stop Picker Modal -->
+    <div class="modal-backdrop" id="genericSheetModal" onclick="hideGenericSheet()">
+      <div class="modal-sheet" style="text-align: left;" onclick="event.stopPropagation()">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <h4 style="font-size: 16px; font-weight: 800;" id="sheetModalTitle">Select Stop</h4>
+          <button style="background: none; border: none; font-size: 18px; cursor: pointer;" onclick="hideGenericSheet()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div id="sheetModalBody"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>
+

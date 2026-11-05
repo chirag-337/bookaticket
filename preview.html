@@ -1,0 +1,1384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BMTC Namma Ride - Mobile App Interactive Preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Kannada:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-red: #C8102E;
+      --primary-red-dark: #900B20;
+      --primary-red-light: #FFECEE;
+      --bg: #F9F9FF;
+      --card-bg: #FFFFFF;
+      --input-bg: #F3F5FA;
+      --emerald: #10B981;
+      --emerald-bg: #E8F8F0;
+      --volvo-blue: #2563EB;
+      --volvo-bg: #EFF6FF;
+      --text-main: #111827;
+      --text-muted: #6B7280;
+      --border-color: #E2E8F0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: #0F172A;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .preview-header {
+      color: white;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .preview-header h1 {
+      font-size: 22px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .preview-header p {
+      color: #94A3B8;
+      font-size: 13px;
+      margin-top: 4px;
+    }
+
+    .screen-pills {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      justify-content: center;
+    }
+
+    .screen-pill {
+      background: #1E293B;
+      color: #94A3B8;
+      border: 1px solid #334155;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .screen-pill.active {
+      background: var(--primary-red);
+      color: white;
+      border-color: var(--primary-red);
+    }
+
+    /* Mobile Device Frame */
+    .device-mockup {
+      width: 400px;
+      max-width: 100%;
+      height: 840px;
+      background: var(--bg);
+      border-radius: 40px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 0 10px #1E293B;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* Status Bar */
+    .status-bar {
+      height: 38px;
+      background: var(--primary-red);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      font-size: 12px;
+      font-weight: 600;
+      z-index: 10;
+    }
+
+    /* BMTC App Bar */
+    .bmtc-app-bar {
+      background: var(--primary-red);
+      color: white;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 10;
+    }
+
+    .back-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+      display: none;
+    }
+
+    .logo-badge {
+      background: var(--primary-red-dark);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      border-radius: 12px;
+      padding: 2px 7px;
+      font-family: 'Noto Sans Kannada', sans-serif;
+      font-size: 11px;
+      font-weight: bold;
+      color: white;
+    }
+
+    .app-title-col {
+      flex: 1;
+    }
+
+    .app-title-col .title {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+
+    .app-title-col .subtitle {
+      font-size: 11px;
+      opacity: 0.85;
+    }
+
+    .app-icons {
+      display: flex;
+      gap: 12px;
+      font-size: 18px;
+    }
+
+    /* Screen Container */
+    .screens-viewport {
+      flex: 1;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .screen {
+      display: none;
+      padding: 16px 14px 100px 14px;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    /* Common Card Styles */
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      margin-bottom: 16px;
+      border: 1px solid var(--border-color);
+    }
+
+    /* Screen 1 Search Elements */
+    .card-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--primary-red-dark);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .badge-live {
+      background: var(--emerald-bg);
+      color: var(--emerald);
+      padding: 3px 8px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .badge-live::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: var(--emerald);
+      border-radius: 50%;
+    }
+
+    .stops-container {
+      position: relative;
+    }
+
+    .stop-group {
+      margin-bottom: 10px;
+    }
+
+    .stop-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .stop-input {
+      background: var(--input-bg);
+      border-radius: 10px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: 700;
+      font-size: 13px;
+      color: var(--text-main);
+      cursor: pointer;
+    }
+
+    .swap-btn {
+      position: absolute;
+      right: 14px;
+      top: 38px;
+      width: 36px;
+      height: 36px;
+      background: #EEF2FF;
+      border-radius: 50%;
+      border: 1px solid #DCE3FA;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #4F46E5;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+      z-index: 2;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .input-col {
+      flex: 1;
+    }
+
+    .text-input {
+      width: 100%;
+      background: var(--input-bg);
+      border: none;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 13px;
+      font-weight: 600;
+      outline: none;
+    }
+
+    .ticket-stepper-box {
+      background: #F8FAFC;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    .stepper-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .stepper-ctrl {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: white;
+      border: 1px solid var(--border-color);
+      padding: 2px 6px;
+      border-radius: 20px;
+    }
+
+    .step-btn {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: none;
+      background: #F1F5F9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .step-btn.plus {
+      background: var(--primary-red);
+      color: white;
+    }
+
+    .filter-chips {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 12px;
+    }
+
+    .filter-chip {
+      background: #E2E8F0;
+      color: #334155;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .filter-chip.active {
+      background: var(--primary-red);
+      color: white;
+    }
+
+    .bus-card {
+      background: white;
+      border-radius: 16px;
+      border: 1px solid var(--border-color);
+      padding: 14px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.2s;
+    }
+
+    .bus-card.selected {
+      border: 1.5px solid var(--primary-red);
+    }
+
+    .bus-card.selected::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 5px;
+      background: var(--primary-red);
+      border-top-left-radius: 16px;
+      border-bottom-left-radius: 16px;
+    }
+
+    .bus-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .bus-num {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .tag-nonac {
+      background: #E2E8F0;
+      color: #475569;
+      font-size: 11px;
+      padding: 2px 7px;
+      border-radius: 6px;
+      font-weight: 700;
+    }
+
+    .tag-ac {
+      background: var(--emerald-bg);
+      color: var(--emerald);
+      font-size: 11px;
+      padding: 2px 7px;
+      border-radius: 6px;
+      font-weight: 700;
+    }
+
+    .tag-volvo {
+      background: var(--volvo-bg);
+      color: var(--volvo-blue);
+      font-size: 11px;
+      padding: 2px 7px;
+      border-radius: 6px;
+      font-weight: 700;
+    }
+
+    .bus-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 10px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .bus-fare {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--primary-red);
+    }
+
+    /* Screen 2 Elements */
+    .route-node-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin: 10px 0;
+    }
+
+    .node-track {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .node-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .node-line {
+      width: 2px;
+      height: 24px;
+      background: #CBD5E1;
+    }
+
+    .stepper-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #F1F5F9;
+    }
+
+    .passenger-card {
+      background: white;
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 10px;
+      border: 1px solid var(--border-color);
+    }
+
+    .payment-option {
+      background: white;
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 12px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+    }
+
+    .payment-option.selected {
+      border-color: var(--primary-red);
+    }
+
+    .radio-circle {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid #CBD5E1;
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .payment-option.selected .radio-circle {
+      border-color: var(--primary-red);
+      background: var(--primary-red);
+    }
+
+    .payment-option.selected .radio-circle::after {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: white;
+      border-radius: 50%;
+    }
+
+    /* Screen 3 Perforated Ticket */
+    .ticket-container {
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      margin-bottom: 16px;
+    }
+
+    .ticket-top {
+      background: var(--primary-red);
+      color: white;
+      padding: 22px 16px;
+      text-align: center;
+    }
+
+    .qr-box {
+      background: white;
+      border-radius: 16px;
+      padding: 14px;
+      display: inline-block;
+      margin-top: 14px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+      cursor: pointer;
+    }
+
+    .ticket-perforation {
+      background: white;
+      height: 24px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .perf-cutout-left, .perf-cutout-right {
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      background: var(--bg);
+      border-radius: 50%;
+    }
+
+    .perf-cutout-left { left: -12px; }
+    .perf-cutout-right { right: -12px; }
+
+    .perf-dashes {
+      width: 80%;
+      border-bottom: 2px dashed #CBD5E1;
+    }
+
+    .ticket-bottom {
+      background: white;
+      padding: 18px;
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 13px;
+    }
+
+    .detail-label {
+      color: var(--text-muted);
+    }
+
+    .detail-val {
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    /* Mini Map Card */
+    .mini-map {
+      height: 120px;
+      background: #E2E8F0;
+      border-radius: 12px;
+      position: relative;
+      overflow: hidden;
+      margin: 10px 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .map-overlay {
+      position: absolute;
+      bottom: 8px;
+      left: 8px;
+      right: 8px;
+      background: rgba(15, 23, 42, 0.85);
+      color: white;
+      padding: 6px 10px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+    }
+
+    /* Sticky Bottom Bar */
+    .sticky-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: white;
+      border-top: 1px solid var(--border-color);
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 20;
+    }
+
+    .btn-red {
+      background: var(--primary-red);
+      color: white;
+      border: none;
+      padding: 12px 22px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Modal dialog */
+    .modal-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+      padding: 20px;
+    }
+
+    .modal-box {
+      background: white;
+      border-radius: 20px;
+      padding: 24px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .spinner {
+      width: 44px;
+      height: 44px;
+      border: 4px solid #F1F5F9;
+      border-top-color: var(--primary-red);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 16px auto;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="preview-header">
+    <h1><i class="fa-solid fa-bus"></i> BMTC Namma Ride (ನಮ್ಮ ಬಸ್)</h1>
+    <p>Interactive Prototype · Linked Flutter 3.x Screens (/ , /checkout , /confirmation/:id)</p>
+    <div class="screen-pills">
+      <button class="screen-pill active" onclick="switchScreen(1)">1. Booking Search</button>
+      <button class="screen-pill" onclick="switchScreen(2)">2. Multi-Passenger Checkout</button>
+      <button class="screen-pill" onclick="switchScreen(3)">3. Confirmed Pass</button>
+    </div>
+  </div>
+
+  <div class="device-mockup">
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <span>09:41</span>
+      <div style="display: flex; gap: 6px;">
+        <i class="fa-solid fa-signal"></i>
+        <i class="fa-solid fa-wifi"></i>
+        <i class="fa-solid fa-battery-full"></i>
+      </div>
+    </div>
+
+    <!-- BMTC App Bar -->
+    <div class="bmtc-app-bar">
+      <button class="back-btn" id="appBarBack" onclick="goBack()"><i class="fa-solid fa-arrow-left"></i></button>
+      <div style="width: 32px; height: 32px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+        <i class="fa-solid fa-bus" style="font-size: 16px;"></i>
+      </div>
+      <span class="logo-badge">ನಮ್ಮ ಬಸ್</span>
+      <div class="app-title-col">
+        <div class="title" id="barTitle">BMTC Namma Ride</div>
+        <div class="subtitle" id="barSubtitle">Book Ticket</div>
+      </div>
+      <div class="app-icons">
+        <i class="fa-regular fa-bell"></i>
+        <i class="fa-regular fa-circle-user"></i>
+      </div>
+    </div>
+
+    <!-- Viewport -->
+    <div class="screens-viewport">
+
+      <!-- SCREEN 1: BOOKING & SEARCH -->
+      <div class="screen active" id="screen1">
+        <!-- Booking Card -->
+        <div class="card">
+          <div class="card-header-row">
+            <div class="card-title">🚌 Book Your Ticket</div>
+            <div class="badge-live">Live Fares</div>
+          </div>
+
+          <div class="stops-container">
+            <div class="stop-group">
+              <div class="stop-label"><i class="fa-solid fa-circle-dot" style="color: var(--primary-red); font-size: 9px;"></i> Boarding Point</div>
+              <div class="stop-input" onclick="alert('Boarding: Shivajinagar Bus Station selected')">
+                <span><i class="fa-solid fa-location-dot" style="color: var(--primary-red); margin-right: 6px;"></i> <span id="s1Board">Shivajinagar Bus Station</span></span>
+                <i class="fa-solid fa-chevron-down" style="color: var(--text-muted); font-size: 12px;"></i>
+              </div>
+            </div>
+
+            <button class="swap-btn" onclick="swapStops()"><i class="fa-solid fa-arrows-up-down"></i></button>
+
+            <div class="stop-group">
+              <div class="stop-label"><i class="fa-solid fa-circle-dot" style="color: var(--primary-red); font-size: 9px;"></i> Alighting Point</div>
+              <div class="stop-input" onclick="alert('Alighting: Whitefield TTMC selected')">
+                <span><i class="fa-solid fa-location-arrow" style="color: var(--primary-red); margin-right: 6px;"></i> <span id="s1Alight">Whitefield TTMC</span></span>
+                <i class="fa-solid fa-chevron-down" style="color: var(--text-muted); font-size: 12px;"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="input-row">
+            <div class="input-col">
+              <div class="stop-label">Passenger Name</div>
+              <input type="text" class="text-input" id="pNameInput" value="Arjun Rao">
+            </div>
+            <div class="input-col">
+              <div class="stop-label">Phone (+91)</div>
+              <input type="text" class="text-input" id="pPhoneInput" value="98765 43210">
+            </div>
+          </div>
+
+          <div class="stop-group">
+            <div class="stop-label">Travel Date</div>
+            <div class="stop-input">
+              <span><i class="fa-regular fa-calendar" style="color: var(--primary-red); margin-right: 6px;"></i> Today, 05 Nov 2026</span>
+              <span style="background: #FFE4D6; color: #EA580C; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 700;">Peak Hours</span>
+            </div>
+          </div>
+
+          <!-- Number of Tickets Stepper -->
+          <div class="ticket-stepper-box">
+            <div class="stepper-header">
+              <div>
+                <div style="font-size: 13px; font-weight: 700;">Number of Tickets</div>
+                <div style="font-size: 11px; color: var(--text-muted);">₹0 surcharge for digital payment</div>
+              </div>
+              <div class="stepper-ctrl">
+                <button class="step-btn" onclick="adjustQuickTickets(-1)">-</button>
+                <span id="quickTicketCount" style="font-weight: 700; font-size: 14px; min-width: 14px; text-align: center;">2</span>
+                <button class="step-btn plus" onclick="adjustQuickTickets(1)">+</button>
+              </div>
+            </div>
+            <div style="display: flex; gap: 8px; margin-top: 10px; align-items: center; font-size: 11px;">
+              <span style="background: #E2E8F0; padding: 2px 8px; border-radius: 4px; font-weight: 600;" id="pillAdult">Adults: 2</span>
+              <span style="background: #E2E8F0; padding: 2px 8px; border-radius: 4px; font-weight: 600;">Child: 0</span>
+              <span style="margin-left: auto; color: var(--emerald); font-weight: 700;"><i class="fa-regular fa-circle-check"></i> Validated</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Available Buses -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+          <h3 style="font-size: 17px; font-weight: 800;">Available Buses</h3>
+          <span style="font-size: 12px; color: var(--primary-red); font-weight: 600;">Shivajinagar → Whitefield</span>
+        </div>
+
+        <!-- Filter chips -->
+        <div class="filter-chips">
+          <div class="filter-chip active">All Services 4</div>
+          <div class="filter-chip">Non-AC</div>
+          <div class="filter-chip">AC Electric</div>
+          <div class="filter-chip">Volvo Vajra</div>
+        </div>
+
+        <!-- Bus Cards -->
+        <div class="bus-card selected" onclick="selectRoute(35, '335E', 'Non-AC', this)">
+          <div class="bus-top">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span class="bus-num">335E</span>
+              <span class="tag-nonac">Non-AC</span>
+            </div>
+            <span style="color: var(--emerald); font-size: 12px; font-weight: 700;"><i class="fa-solid fa-circle-check"></i> Selected</span>
+          </div>
+          <div style="font-size: 12px; color: var(--text-muted);">Shivajinagar → Whitefield TTMC via HAL Old Airport Rd</div>
+          <div class="bus-bottom">
+            <span><i class="fa-regular fa-clock"></i> 08:45 AM &nbsp; <i class="fa-solid fa-chair" style="color: var(--emerald);"></i> 30 seats</span>
+            <span class="bus-fare">₹35<span style="font-size: 11px; font-weight: normal; color: var(--text-muted);">/ticket</span></span>
+          </div>
+        </div>
+
+        <div class="bus-card" onclick="selectRoute(55, '500C', 'AC', this)">
+          <div class="bus-top">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span class="bus-num">500C</span>
+              <span class="tag-ac">AC</span>
+            </div>
+            <div class="radio-circle"></div>
+          </div>
+          <div style="font-size: 12px; color: var(--text-muted);">Shivajinagar → Whitefield via Marathahalli Bridge</div>
+          <div class="bus-bottom">
+            <span><i class="fa-regular fa-clock"></i> 08:30 AM &nbsp; <i class="fa-solid fa-chair" style="color: var(--emerald);"></i> 22 seats</span>
+            <span class="bus-fare">₹55<span style="font-size: 11px; font-weight: normal; color: var(--text-muted);">/ticket</span></span>
+          </div>
+        </div>
+
+        <div class="bus-card" onclick="selectRoute(90, 'V600', 'Volvo', this)">
+          <div class="bus-top">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span class="bus-num">V600</span>
+              <span class="tag-volvo">Volvo</span>
+            </div>
+            <div class="radio-circle"></div>
+          </div>
+          <div style="font-size: 12px; color: var(--text-muted);">Banashankari → Whitefield Express (via Shivajinagar)</div>
+          <div class="bus-bottom">
+            <span><i class="fa-regular fa-clock"></i> 10:00 AM &nbsp; <i class="fa-solid fa-chair" style="color: #EA580C;"></i> <span style="color: #EA580C; font-weight: 600;">10 seats left</span></span>
+            <span class="bus-fare">₹90<span style="font-size: 11px; font-weight: normal; color: var(--text-muted);">/ticket</span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCREEN 2: CHECKOUT -->
+      <div class="screen" id="screen2">
+        <!-- Route Summary -->
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; gap: 6px; align-items: center;">
+              <span style="font-weight: 800; font-size: 15px;" id="cRouteNum">335E</span>
+              <span class="tag-nonac" id="cRouteTag">Non-AC</span>
+            </div>
+            <span style="font-size: 13px; font-weight: 700; color: var(--primary-red);"><i class="fa-regular fa-clock"></i> 08:45 AM</span>
+          </div>
+          <div class="route-node-row">
+            <div class="node-track">
+              <div class="node-dot" style="background: var(--primary-red);"></div>
+              <div class="node-line"></div>
+              <div class="node-dot" style="background: var(--emerald);"></div>
+            </div>
+            <div style="flex: 1; font-size: 13px; font-weight: 700;">
+              <div id="cBoard">Shivajinagar</div>
+              <div style="margin-top: 14px;" id="cAlight">Whitefield TTMC</div>
+            </div>
+            <div style="text-align: right; font-size: 12px; color: var(--text-muted);">
+              <div style="font-weight: 600; color: var(--text-main);">Platform 3</div>
+              <div style="margin-top: 4px;">Bay 2</div>
+            </div>
+          </div>
+          <div style="border-top: 1px solid #F1F5F9; padding-top: 10px; display: flex; justify-content: space-between; font-size: 12px;">
+            <span style="color: var(--emerald); font-weight: 600;"><i class="fa-solid fa-shield-halved"></i> Real-time GPS Tracking Active</span>
+            <span style="color: var(--primary-red); font-weight: 700;">22 Seats Left</span>
+          </div>
+        </div>
+
+        <!-- Steppers Section -->
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span style="font-size: 15px; font-weight: 800;">Select Passengers</span>
+            <span style="background: #FFE8EB; color: var(--primary-red); padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 700;" id="totalTicketsPill">3 Tickets</span>
+          </div>
+
+          <div class="stepper-row">
+            <div>
+              <div style="font-size: 14px; font-weight: 700;">Adult</div>
+              <div style="font-size: 11px; color: var(--text-muted);">₹35 per passenger</div>
+            </div>
+            <span style="font-weight: 700; color: var(--primary-red);" id="adultSub">₹70</span>
+            <div class="stepper-ctrl">
+              <button class="step-btn" onclick="updateAdults(-1)">-</button>
+              <span id="adultCountDisplay" style="font-weight: 700; font-size: 14px;">2</span>
+              <button class="step-btn plus" onclick="updateAdults(1)">+</button>
+            </div>
+          </div>
+
+          <div class="stepper-row">
+            <div>
+              <div style="font-size: 14px; font-weight: 700;">Child (5-12 yrs)</div>
+              <div style="font-size: 11px; color: var(--text-muted);">₹20 per passenger</div>
+            </div>
+            <span style="font-weight: 700; color: var(--primary-red);" id="childSub">₹20</span>
+            <div class="stepper-ctrl">
+              <button class="step-btn" onclick="updateChildren(-1)">-</button>
+              <span id="childCountDisplay" style="font-weight: 700; font-size: 14px;">1</span>
+              <button class="step-btn plus" onclick="updateChildren(1)">+</button>
+            </div>
+          </div>
+
+          <div class="stepper-row" style="border: none;">
+            <div>
+              <div style="font-size: 14px; font-weight: 700;">Senior / Concession</div>
+              <div style="font-size: 11px; color: var(--text-muted);">₹18 per passenger</div>
+            </div>
+            <span style="font-weight: 700; color: var(--primary-red);" id="seniorSub">₹0</span>
+            <div class="stepper-ctrl">
+              <button class="step-btn" onclick="updateSeniors(-1)">-</button>
+              <span id="seniorCountDisplay" style="font-weight: 700; font-size: 14px;">0</span>
+              <button class="step-btn plus" onclick="updateSeniors(1)">+</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Passenger Details (Dynamic) -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+          <span style="font-size: 16px; font-weight: 800;">Passenger Details</span>
+          <span style="color: var(--emerald); font-size: 11px; font-weight: 700;"><i class="fa-solid fa-shield-halved"></i> Auto-verified</span>
+        </div>
+        <div id="dynamicPassengerForms"></div>
+
+        <!-- Fare Breakdown -->
+        <div class="card">
+          <div style="font-size: 15px; font-weight: 800; margin-bottom: 12px;"><i class="fa-solid fa-receipt" style="color: var(--primary-red);"></i> Fare Breakdown</div>
+          <div class="detail-row"><span class="detail-label" id="lblAdultBreak">2× Adult Base Fare</span><span class="detail-val" id="valAdultBreak">₹70</span></div>
+          <div class="detail-row"><span class="detail-label" id="lblChildBreak">1× Child Fare (50% Off)</span><span class="detail-val" id="valChildBreak">₹20</span></div>
+          <div class="detail-row"><span class="detail-label">Service & GST <i class="fa-solid fa-check" style="color: var(--emerald);"></i></span><span class="detail-val" style="color: var(--emerald);">₹0 Free</span></div>
+          <div style="border-top: 1px solid var(--border-color); margin-top: 10px; padding-top: 10px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-size: 14px; font-weight: 800;">Total Payable</div>
+              <div style="font-size: 11px; color: var(--text-muted);">Instant digital ticket delivery</div>
+            </div>
+            <span style="font-size: 24px; font-weight: 900; color: var(--primary-red);" id="totalPayableBreak">₹90</span>
+          </div>
+        </div>
+
+        <!-- Payment Method -->
+        <h4 style="font-size: 16px; font-weight: 800; margin-bottom: 10px;">Payment Method</h4>
+        <div class="payment-option selected" onclick="selectPay(this)">
+          <div style="width: 36px; height: 36px; background: var(--emerald-bg); color: var(--emerald); border-radius: 10px; display: flex; align-items: center; justify-content: center;"><i class="fa-solid fa-wallet"></i></div>
+          <div>
+            <div style="font-size: 13px; font-weight: 700;">UPI Instant <span style="background: var(--emerald-bg); color: var(--emerald); font-size: 10px; padding: 1px 6px; border-radius: 4px;">Fast</span></div>
+            <div style="font-size: 11px; color: var(--text-muted);">GPay, PhonePe, Paytm, BHIM</div>
+          </div>
+          <div class="radio-circle"></div>
+        </div>
+        <div class="payment-option" onclick="selectPay(this)">
+          <div style="width: 36px; height: 36px; background: var(--volvo-bg); color: var(--volvo-blue); border-radius: 10px; display: flex; align-items: center; justify-content: center;"><i class="fa-solid fa-id-card"></i></div>
+          <div>
+            <div style="font-size: 13px; font-weight: 700;">BMTC Smart Card / Pass</div>
+            <div style="font-size: 11px; color: var(--text-muted);">Tap & Pay or Namma Pass ID</div>
+          </div>
+          <div class="radio-circle"></div>
+        </div>
+        <div class="payment-option" onclick="selectPay(this)">
+          <div style="width: 36px; height: 36px; background: #EEF2FF; color: #6366F1; border-radius: 10px; display: flex; align-items: center; justify-content: center;"><i class="fa-regular fa-credit-card"></i></div>
+          <div>
+            <div style="font-size: 13px; font-weight: 700;">Cards / Net Banking</div>
+            <div style="font-size: 11px; color: var(--text-muted);">Visa, Mastercard, RuPay</div>
+          </div>
+          <div class="radio-circle"></div>
+        </div>
+      </div>
+
+      <!-- SCREEN 3: CONFIRMED TICKET PASS -->
+      <div class="screen" id="screen3">
+        <!-- Pass header -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 12px;">
+          <span style="font-weight: 700; display: flex; align-items: center; gap: 6px;"><span style="width: 8px; height: 8px; background: var(--emerald); border-radius: 50%;"></span> Active Digital Pass</span>
+          <span style="background: #F1F5F9; padding: 3px 8px; border-radius: 10px; color: var(--text-muted);">Valid for 3h remaining</span>
+        </div>
+
+        <!-- Perforated Ticket Card -->
+        <div class="ticket-container">
+          <div class="ticket-top">
+            <div style="width: 40px; height: 40px; background: #34D399; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px auto; font-size: 20px;">
+              <i class="fa-solid fa-check"></i>
+            </div>
+            <h2 style="font-size: 20px; font-weight: 800;">Ticket Confirmed!</h2>
+            <div style="font-size: 12px; opacity: 0.9; margin-top: 4px;">Ticket ID: NR-MW3W0FRR</div>
+
+            <div class="qr-box" onclick="alert('Digital QR Code enlarged for BMTC Conductor verification!')">
+              <svg width="150" height="150" viewBox="0 0 100 100">
+                <rect width="100" height="100" fill="white"/>
+                <!-- QR Finder patterns -->
+                <rect x="5" y="5" width="28" height="28" fill="#1E293B"/>
+                <rect x="9" y="9" width="20" height="20" fill="white"/>
+                <rect x="13" y="13" width="12" height="12" fill="#1E293B"/>
+
+                <rect x="67" y="5" width="28" height="28" fill="#1E293B"/>
+                <rect x="71" y="9" width="20" height="20" fill="white"/>
+                <rect x="75" y="13" width="12" height="12" fill="#1E293B"/>
+
+                <rect x="5" y="67" width="28" height="28" fill="#1E293B"/>
+                <rect x="9" y="71" width="20" height="20" fill="white"/>
+                <rect x="13" y="75" width="12" height="12" fill="#1E293B"/>
+
+                <!-- Random data dots -->
+                <rect x="38" y="10" width="5" height="5" fill="#1E293B"/>
+                <rect x="48" y="10" width="5" height="5" fill="#1E293B"/>
+                <rect x="42" y="22" width="5" height="5" fill="#1E293B"/>
+                <rect x="52" y="25" width="5" height="5" fill="#1E293B"/>
+                <rect x="10" y="42" width="5" height="5" fill="#1E293B"/>
+                <rect x="25" y="48" width="5" height="5" fill="#1E293B"/>
+                <rect x="40" y="40" width="5" height="5" fill="#1E293B"/>
+                <rect x="50" y="45" width="5" height="5" fill="#1E293B"/>
+                <rect x="65" y="42" width="5" height="5" fill="#1E293B"/>
+                <rect x="80" y="48" width="5" height="5" fill="#1E293B"/>
+                <rect x="40" y="65" width="5" height="5" fill="#1E293B"/>
+                <rect x="55" y="70" width="5" height="5" fill="#1E293B"/>
+                <rect x="45" y="80" width="5" height="5" fill="#1E293B"/>
+                <rect x="70" y="75" width="5" height="5" fill="#1E293B"/>
+                <rect x="82" y="82" width="5" height="5" fill="#1E293B"/>
+              </svg>
+              <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px; font-weight: 600;"><i class="fa-solid fa-expand"></i> Tap to enlarge for Conductor</div>
+            </div>
+          </div>
+
+          <div class="ticket-perforation">
+            <div class="perf-cutout-left"></div>
+            <div class="perf-dashes"></div>
+            <div class="perf-cutout-right"></div>
+          </div>
+
+          <div class="ticket-bottom">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+              <span style="font-size: 11px; font-weight: 700; color: var(--text-muted);">PASSENGER SEATS</span>
+              <span style="background: #FFE8EB; color: var(--primary-red); padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 700;">3 Passengers</span>
+            </div>
+            <!-- Seat chips -->
+            <div style="display: flex; gap: 8px; margin-bottom: 14px; overflow-x: auto;">
+              <div style="background: #F1F5F9; border: 1px solid #E2E8F0; padding: 6px 12px; border-radius: 8px; text-align: center; font-size: 11px;">
+                <div style="font-weight: 600;">Rohan (A)</div>
+                <div style="font-weight: 800; color: var(--emerald);">Seat #14</div>
+              </div>
+              <div style="background: #F1F5F9; border: 1px solid #E2E8F0; padding: 6px 12px; border-radius: 8px; text-align: center; font-size: 11px;">
+                <div style="font-weight: 600;">Priya (A)</div>
+                <div style="font-weight: 800; color: var(--emerald);">Seat #15</div>
+              </div>
+              <div style="background: #F1F5F9; border: 1px solid #E2E8F0; padding: 6px 12px; border-radius: 8px; text-align: center; font-size: 11px;">
+                <div style="font-weight: 600;">Aarav (C)</div>
+                <div style="font-weight: 800; color: var(--emerald);">Seat #16</div>
+              </div>
+            </div>
+
+            <div class="detail-row"><span class="detail-label">Passenger</span><span class="detail-val" style="font-weight: 800;">Rohan Sharma</span></div>
+            <div class="detail-row"><span class="detail-label">Phone</span><span class="detail-val">+91 98445 32431</span></div>
+            <div class="detail-row"><span class="detail-label">Route</span><span class="detail-val">335E <span class="tag-nonac">Non-AC</span></span></div>
+            <div class="detail-row"><span class="detail-label">Boarding</span><span class="detail-val">Shivajinagar Bus Stn</span></div>
+            <div class="detail-row"><span class="detail-label">Alighting</span><span class="detail-val">Whitefield TTMC</span></div>
+            <div class="detail-row"><span class="detail-label">Travel Date</span><span class="detail-val">05 Nov 2026</span></div>
+            <div class="detail-row"><span class="detail-label">Departure</span><span class="detail-val" style="font-weight: 800;">08:45 AM</span></div>
+            <div class="detail-row"><span class="detail-label">Pass Status</span><span class="detail-val" style="color: var(--emerald); font-weight: 800;">● VALID & ACTIVE</span></div>
+
+            <div style="background: #F3F6FD; border: 1px solid #E2E8F0; border-radius: 12px; padding: 12px 14px; margin-top: 14px; display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div style="font-size: 12px; color: var(--text-muted);">Total Fare Paid</div>
+                <div style="font-size: 11px; font-weight: 600; color: var(--text-main);"><span style="color: var(--emerald);">●</span> UPI · Successful</div>
+              </div>
+              <span style="font-size: 24px; font-weight: 900; color: var(--primary-red);" id="confirmTotalPaid">₹90</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bus Tracking -->
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <div style="width: 32px; height: 32px; background: #FFECEE; color: var(--primary-red); border-radius: 8px; display: flex; align-items: center; justify-content: center;"><i class="fa-solid fa-bus"></i></div>
+              <div>
+                <div style="font-size: 14px; font-weight: 700;">Bus 335E Tracking</div>
+                <div style="font-size: 11px; color: var(--text-muted);">Arriving platform 3 in 6 mins</div>
+              </div>
+            </div>
+            <span style="background: #DCFCE7; color: #16A34A; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 10px;">ON TIME</span>
+          </div>
+
+          <div class="mini-map" onclick="alert('Live Radar: 1.2 km away from boarding point · Moving at 34 km/h')">
+            <div style="text-align: center; color: rgba(30,41,59,0.3); font-weight: 800; font-size: 16px;">
+              Bengaluru<br><span style="font-size: 12px;">ಬೆಂಗಳೂರು</span>
+            </div>
+            <div class="map-overlay">
+              <span><i class="fa-solid fa-location-arrow" style="color: var(--emerald);"></i> 1.2 km away from boarding stop</span>
+              <span style="background: white; color: black; font-weight: bold; padding: 2px 6px; border-radius: 4px; font-size: 10px;">Map View →</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <button style="width: 100%; background: #EFF6FF; color: var(--volvo-blue); border: none; padding: 14px; border-radius: 12px; font-weight: 700; font-size: 14px; margin-bottom: 10px; cursor: pointer;" onclick="alert('PDF receipt downloaded to device!')">
+          <i class="fa-solid fa-share-nodes"></i> Download PDF Receipt / Share
+        </button>
+        <button style="width: 100%; background: var(--volvo-blue); color: white; border: none; padding: 14px; border-radius: 12px; font-weight: 700; font-size: 14px; margin-bottom: 10px; cursor: pointer;" onclick="alert('Opening Full GPS Live Telemetry...')">
+          <i class="fa-solid fa-crosshairs"></i> Live Track Bus 335E
+        </button>
+        <button style="width: 100%; background: var(--primary-red); color: white; border: none; padding: 14px; border-radius: 12px; font-weight: 700; font-size: 14px; cursor: pointer;" onclick="bookAnother()">
+          <i class="fa-solid fa-ticket"></i> Book Another Ticket
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Sticky Bottom Bar for Screen 1 & 2 -->
+    <div class="sticky-bar" id="stickyBar">
+      <div>
+        <div style="font-size: 13px; font-weight: 600;">Total: <span style="font-size: 20px; font-weight: 900; color: var(--primary-red);" id="barTotal">₹70</span></div>
+        <div style="font-size: 11px; color: var(--text-muted);" id="barSub">335E Non-AC · 2 Passengers</div>
+      </div>
+      <button class="btn-red" id="stickyBtn" onclick="onStickyAction()">
+        <span id="stickyBtnText">Book Now</span> <i class="fa-solid fa-ticket"></i>
+      </button>
+    </div>
+
+    <!-- Processing Modal -->
+    <div class="modal-overlay" id="loadingModal">
+      <div class="modal-box">
+        <div class="spinner"></div>
+        <div style="font-size: 18px; font-weight: 800; color: var(--text-main);">Processing Payment</div>
+        <div style="font-size: 12px; color: var(--text-muted); margin-top: 6px;">Securing seat allocation with BMTC server...</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentScreen = 1;
+    let selectedRouteBaseFare = 35;
+    let selectedRouteName = '335E';
+    let selectedRouteTag = 'Non-AC';
+
+    let adultCount = 2;
+    let childCount = 0;
+    let seniorCount = 0;
+
+    const defaultNames = ['Rohan Sharma', 'Priya Sharma', 'Aarav Sharma'];
+    const defaultAges = [28, 26, 8];
+    const defaultGenders = ['Male', 'Female', 'Male'];
+    const defaultMobiles = ['+91 98450 12345', '', ''];
+
+    function switchScreen(screenNum) {
+      currentScreen = screenNum;
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.screen-pill').forEach(p => p.classList.remove('active'));
+
+      document.getElementById('screen' + screenNum).classList.add('active');
+      document.querySelectorAll('.screen-pill')[screenNum - 1].classList.add('active');
+
+      const backBtn = document.getElementById('appBarBack');
+      const barTitle = document.getElementById('barTitle');
+      const barSubtitle = document.getElementById('barSubtitle');
+      const stickyBar = document.getElementById('stickyBar');
+
+      if (screenNum === 1) {
+        backBtn.style.display = 'none';
+        barTitle.innerText = 'BMTC Namma Ride';
+        barSubtitle.innerText = 'Book Ticket';
+        stickyBar.style.display = 'flex';
+        document.getElementById('stickyBtnText').innerText = 'Book Now';
+        recalcScreen1();
+      } else if (screenNum === 2) {
+        backBtn.style.display = 'block';
+        barTitle.innerText = 'Ticket Checkout';
+        barSubtitle.innerText = 'ನಮ್ಮ ಬಸ್';
+        stickyBar.style.display = 'flex';
+        document.getElementById('stickyBtnText').innerText = 'Book Now';
+        if (childCount === 0 && adultCount === 2) {
+          childCount = 1; // seed matching screenshot 2
+        }
+        recalcScreen2();
+      } else if (screenNum === 3) {
+        backBtn.style.display = 'block';
+        barTitle.innerText = 'Active Ticket';
+        barSubtitle.innerText = 'ನಮ್ಮ ಬಸ್';
+        stickyBar.style.display = 'none';
+      }
+    }
+
+    function goBack() {
+      if (currentScreen === 3) switchScreen(1);
+      else if (currentScreen === 2) switchScreen(1);
+    }
+
+    function swapStops() {
+      const b = document.getElementById('s1Board');
+      const a = document.getElementById('s1Alight');
+      const tmp = b.innerText;
+      b.innerText = a.innerText;
+      a.innerText = tmp;
+    }
+
+    function adjustQuickTickets(delta) {
+      if (adultCount + delta >= 1) {
+        adultCount += delta;
+        document.getElementById('quickTicketCount').innerText = adultCount;
+        document.getElementById('pillAdult').innerText = 'Adults: ' + adultCount;
+        recalcScreen1();
+      }
+    }
+
+    function selectRoute(fare, num, tag, el) {
+      selectedRouteBaseFare = fare;
+      selectedRouteName = num;
+      selectedRouteTag = tag;
+      document.querySelectorAll('.bus-card').forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+      recalcScreen1();
+    }
+
+    function recalcScreen1() {
+      const total = selectedRouteBaseFare * adultCount;
+      document.getElementById('barTotal').innerText = '₹' + total;
+      document.getElementById('barSub').innerText = `${selectedRouteName} ${selectedRouteTag} · ${adultCount} Passengers`;
+    }
+
+    function updateAdults(delta) {
+      if (adultCount + delta >= 0 && (adultCount + delta + childCount + seniorCount >= 1)) {
+        adultCount += delta;
+        recalcScreen2();
+      }
+    }
+
+    function updateChildren(delta) {
+      if (childCount + delta >= 0 && (adultCount + childCount + delta + seniorCount >= 1)) {
+        childCount += delta;
+        recalcScreen2();
+      }
+    }
+
+    function updateSeniors(delta) {
+      if (seniorCount + delta >= 0 && (adultCount + childCount + seniorCount + delta >= 1)) {
+        seniorCount += delta;
+        recalcScreen2();
+      }
+    }
+
+    function recalcScreen2() {
+      const totalCount = adultCount + childCount + seniorCount;
+      document.getElementById('totalTicketsPill').innerText = `${totalCount} Tickets`;
+      document.getElementById('adultCountDisplay').innerText = adultCount;
+      document.getElementById('childCountDisplay').innerText = childCount;
+      document.getElementById('seniorCountDisplay').innerText = seniorCount;
+
+      const adultSub = adultCount * selectedRouteBaseFare;
+      const childSub = childCount * 20;
+      const seniorSub = seniorCount * 18;
+      const total = adultSub + childSub + seniorSub;
+
+      document.getElementById('adultSub').innerText = '₹' + adultSub;
+      document.getElementById('childSub').innerText = '₹' + childSub;
+      document.getElementById('seniorSub').innerText = '₹' + seniorSub;
+
+      document.getElementById('lblAdultBreak').innerText = `${adultCount}× Adult Base Fare`;
+      document.getElementById('valAdultBreak').innerText = '₹' + adultSub;
+      document.getElementById('lblChildBreak').innerText = `${childCount}× Child Fare (50% Off)`;
+      document.getElementById('valChildBreak').innerText = '₹' + childSub;
+      document.getElementById('totalPayableBreak').innerText = '₹' + total;
+      document.getElementById('confirmTotalPaid').innerText = '₹' + total;
+
+      document.getElementById('barTotal').innerText = '₹' + total;
+      document.getElementById('barSub').innerText = `${totalCount} Passengers · Route ${selectedRouteName}`;
+
+      renderDynamicPassengers();
+    }
+
+    function renderDynamicPassengers() {
+      const container = document.getElementById('dynamicPassengerForms');
+      container.innerHTML = '';
+      const totalCount = adultCount + childCount + seniorCount;
+
+      for (let i = 0; i < totalCount; i++) {
+        let isChild = i >= adultCount && i < adultCount + childCount;
+        let role = i === 0 ? 'Primary Passenger' : (isChild ? 'Child Passenger' : 'Co-Passenger');
+        let typeBadge = isChild ? 'Child' : 'Adult';
+        let badgeClass = isChild ? 'tag-volvo' : 'tag-ac';
+
+        let name = i < defaultNames.length ? defaultNames[i] : 'Passenger ' + (i + 1);
+        let age = i < defaultAges.length ? defaultAges[i] : (isChild ? 8 : 25);
+        let gender = i < defaultGenders.length ? defaultGenders[i] : 'Male';
+        let mobile = i === 0 ? '+91 98450 12345' : '';
+
+        const card = document.createElement('div');
+        card.className = 'passenger-card';
+        card.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="width: 22px; height: 22px; background: #FFECEE; color: var(--primary-red); border-radius: 50%; font-size: 11px; font-weight: bold; display: flex; align-items: center; justify-content: center;">${i + 1}</span>
+              <span style="font-size: 14px; font-weight: 700;">${role}</span>
+            </div>
+            <span class="${badgeClass}">${typeBadge}</span>
+          </div>
+          <div class="input-row">
+            <div style="flex: 3;">
+              <div class="stop-label">Full Name</div>
+              <input type="text" class="text-input" value="${name}">
+            </div>
+            <div style="flex: 1;">
+              <div class="stop-label">Age</div>
+              <input type="number" class="text-input" value="${age}">
+            </div>
+          </div>
+          <div class="input-row">
+            <div style="flex: 1;">
+              <div class="stop-label">Gender</div>
+              <select class="text-input">
+                <option ${gender === 'Male' ? 'selected' : ''}>Male</option>
+                <option ${gender === 'Female' ? 'selected' : ''}>Female</option>
+                <option>Other</option>
+              </select>
+            </div>
+            ${i === 0 ? `
+            <div style="flex: 1;">
+              <div class="stop-label">Mobile</div>
+              <input type="text" class="text-input" value="${mobile}">
+            </div>` : ''}
+          </div>
+        `;
+        container.appendChild(card);
+      }
+    }
+
+    function selectPay(el) {
+      document.querySelectorAll('.payment-option').forEach(p => p.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+
+    function onStickyAction() {
+      if (currentScreen === 1) {
+        switchScreen(2);
+      } else if (currentScreen === 2) {
+        document.getElementById('loadingModal').style.display = 'flex';
+        setTimeout(() => {
+          document.getElementById('loadingModal').style.display = 'none';
+          switchScreen(3);
+        }, 1200);
+      }
+    }
+
+    function bookAnother() {
+      adultCount = 2;
+      childCount = 0;
+      seniorCount = 0;
+      switchScreen(1);
+    }
+
+    // Initialize
+    recalcScreen1();
+  </script>
+</body>
+</html>
+
